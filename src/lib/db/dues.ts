@@ -35,6 +35,61 @@ export async function getDuesByMember(
   return data ?? [];
 }
 
+/** A single dues row, scoped to the community for tenant safety. */
+export async function getDuesById(
+  communityId: string,
+  duesId: string,
+): Promise<DuesLedger | null> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("dues_ledger")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("id", duesId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/** All dues rows for a community in a specific billing period (year + month). */
+export async function getDuesForPeriod(
+  communityId: string,
+  periodYear: number,
+  periodMonth: number,
+): Promise<DuesLedger[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("dues_ledger")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("period_year", periodYear)
+    .eq("period_month", periodMonth);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+/**
+ * Pending dues in a community whose due_date is strictly before `beforeDate`
+ * (YYYY-MM-DD). Used by the nightly late-fee job to find overdue charges.
+ */
+export async function getPendingDuesDueBefore(
+  communityId: string,
+  beforeDate: string,
+): Promise<DuesLedger[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("dues_ledger")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("status", "pending")
+    .lt("due_date", beforeDate);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 /** Create a dues charge. community_id is forced from the trusted argument. */
 export async function createDuesCharge(
   communityId: string,

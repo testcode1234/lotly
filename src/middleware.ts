@@ -12,17 +12,27 @@ const isProtectedRoute = createRouteMatcher([
   "/documents(.*)",
   "/members(.*)",
   "/settings(.*)",
+  "/onboarding(.*)",
   "/api/communities(.*)",
   "/api/members(.*)",
   "/api/dues(.*)",
   "/api/violations(.*)",
   "/api/documents(.*)",
+  "/api/onboarding(.*)",
+]);
+
+// Routes a signed-in user may reach BEFORE they belong to a community. The
+// no-community redirect (rule 2) must not bounce these, or onboarding loops.
+const isOnboardingRoute = createRouteMatcher([
+  "/onboarding(.*)",
+  "/api/onboarding(.*)",
 ]);
 
 const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/webhooks(.*)",
+  "/api/inngest(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -40,8 +50,9 @@ export default clerkMiddleware(async (auth, req) => {
 
     const meta = sessionClaims?.publicMetadata;
 
-    // 2. Authenticated but no community yet → onboarding.
-    if (!meta?.communityId && !req.nextUrl.pathname.startsWith("/onboarding")) {
+    // 2. Authenticated but no community yet → onboarding (except the
+    //    onboarding routes themselves, which is where they bind a community).
+    if (!meta?.communityId && !isOnboardingRoute(req)) {
       return NextResponse.redirect(new URL("/onboarding", req.url));
     }
 

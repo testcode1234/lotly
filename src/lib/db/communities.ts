@@ -1,5 +1,52 @@
 import { createServerClient } from "./client";
-import type { Community, CommunityUpdate, CommunityStats } from "@/types";
+import type {
+  Community,
+  CommunityInsert,
+  CommunityUpdate,
+  CommunityStats,
+} from "@/types";
+
+/** Create a community. Returns the inserted row (with generated id). */
+export async function createCommunity(
+  data: CommunityInsert,
+): Promise<Community> {
+  const supabase = createServerClient();
+  const { data: created, error } = await supabase
+    .from("communities")
+    .insert(data)
+    .select("*")
+    .single();
+
+  if (error) throw error;
+  return created;
+}
+
+/**
+ * Look up a community by its Stripe Connect account id. Used by the Stripe
+ * webhook to reconcile account.* events back to a tenant. Returns null if no
+ * community owns that account.
+ */
+export async function getCommunityByStripeAccountId(
+  stripeAccountId: string,
+): Promise<Community | null> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("communities")
+    .select("*")
+    .eq("stripe_account_id", stripeAccountId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/** Every community. Used by scheduled jobs that fan out across all tenants. */
+export async function getAllCommunities(): Promise<Community[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase.from("communities").select("*");
+  if (error) throw error;
+  return data ?? [];
+}
 
 /** Fetch a single community by id. Returns null if not found. */
 export async function getCommunityById(

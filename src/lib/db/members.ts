@@ -16,6 +16,21 @@ export async function getMembersByCommunity(
   return data ?? [];
 }
 
+/** Active members in a community (status = 'active'). */
+export async function getActiveMembersByCommunity(
+  communityId: string,
+): Promise<Member[]> {
+  const supabase = createServerClient();
+  const { data, error } = await supabase
+    .from("members")
+    .select("*")
+    .eq("community_id", communityId)
+    .eq("status", "active");
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 /**
  * Look up a member by Clerk id (across communities). Used by the Clerk
  * webhook to link a freshly synced user to their member record. Returns null

@@ -19,7 +19,8 @@ export function getStripe(): Stripe {
   }
 
   stripe = new Stripe(key, {
-    // Pin the API version once Stripe Connect is configured in Session 2.
+    // Pinned to the version the installed SDK (v22) is generated against.
+    apiVersion: "2026-05-27.dahlia",
     typescript: true,
   });
   return stripe;

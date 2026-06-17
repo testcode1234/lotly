@@ -7,9 +7,35 @@ import {
   Settings,
   type LucideIcon,
 } from "lucide-react";
-import type { Role } from "@/types";
+import type { DuesStatus, Role } from "@/types";
 
 export const APP_NAME = "Lotly";
+
+/** Format a dollar amount (number) as USD currency. */
+export function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(amount);
+}
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+/** Human label for a dues billing period, e.g. "March 2026". */
+export function periodLabel(year: number, month: number): string {
+  return `${MONTH_NAMES[month - 1] ?? "?"} ${year}`;
+}
+
+export const DUES_STATUS_LABELS: Record<DuesStatus, string> = {
+  pending: "Pending",
+  paid: "Paid",
+  late: "Late",
+  waived: "Waived",
+  partial: "Partial",
+};
 
 export type NavItem = {
   label: string;
