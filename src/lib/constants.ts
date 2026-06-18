@@ -4,6 +4,7 @@ import {
   TriangleAlert,
   FileText,
   Users,
+  Home,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -58,6 +59,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Violations", href: "/violations", icon: TriangleAlert, roles: BOARD_ROLES },
   { label: "Documents", href: "/documents", icon: FileText, roles: ALL_ROLES },
   { label: "Members", href: "/members", icon: Users, roles: BOARD_ROLES },
+  { label: "Units", href: "/units", icon: Home, roles: BOARD_ROLES },
   { label: "Settings", href: "/settings", icon: Settings, roles: ["board_admin"] },
 ];
 

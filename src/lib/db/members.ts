@@ -84,6 +84,21 @@ export async function createMember(
   return created;
 }
 
+/** Delete a member, scoped to the community for tenant safety. */
+export async function deleteMember(
+  communityId: string,
+  memberId: string,
+): Promise<void> {
+  const supabase = createServerClient();
+  const { error } = await supabase
+    .from("members")
+    .delete()
+    .eq("community_id", communityId)
+    .eq("id", memberId);
+
+  if (error) throw error;
+}
+
 /** Update a member, scoped to the community so cross-tenant writes fail. */
 export async function updateMember(
   communityId: string,

@@ -11,14 +11,17 @@ const isProtectedRoute = createRouteMatcher([
   "/violations(.*)",
   "/documents(.*)",
   "/members(.*)",
+  "/units(.*)",
   "/settings(.*)",
   "/onboarding(.*)",
   "/api/communities(.*)",
   "/api/members(.*)",
+  "/api/units(.*)",
   "/api/dues(.*)",
   "/api/violations(.*)",
   "/api/documents(.*)",
   "/api/onboarding(.*)",
+  "/api/import(.*)",
 ]);
 
 // Routes a signed-in user may reach BEFORE they belong to a community. The
